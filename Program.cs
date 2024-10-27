@@ -3,7 +3,9 @@ using MicroServiceMicrocontrollerManager.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Configuration
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -19,14 +21,21 @@ builder.Services.AddSingleton<MqttService>();
 
 var app = builder.Build();
 
+app.UseRouting();
+
 var processingService = app.Services.GetRequiredService<ProcessingService>();
 processingService.StartProcessing();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if(app.Environment.IsEnvironment("Docker") || app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.MapGet("/", context =>
+    {
+        context.Response.Redirect("/swagger");
+        return Task.CompletedTask;
+    });
 }
 
 app.UseHttpsRedirection();
