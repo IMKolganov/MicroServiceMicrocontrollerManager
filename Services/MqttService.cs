@@ -5,6 +5,7 @@ using System.Text;
 using MicroServiceMicrocontrollerManager.Models.Other;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Options;
+using SharedRequests.SmartGarden.Models;
 
 namespace MicroServiceMicrocontrollerManager.Services;
 

@@ -1,6 +1,8 @@
 ﻿using MicroServiceMicrocontrollerManager.Models;
 using MicroServiceMicrocontrollerManager.Models.Other;
 using Newtonsoft.Json;
+using SharedRequests.SmartGarden.Models.Requests;
+using SharedRequests.SmartGarden.Models.Responses;
 
 namespace MicroServiceMicrocontrollerManager.Services;
 
