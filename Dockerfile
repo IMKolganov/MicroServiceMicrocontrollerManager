@@ -1,32 +1,34 @@
-# Use the SDK image for building and running the app
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-USER app
-WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
-
-# Install curl for debugging
-RUN apt-get update && apt-get install -y curl
-
 # Use the SDK image for building the app
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+
+# Установка зависимостей и сборка проекта
 WORKDIR /src
 COPY ["MicroServiceMicrocontrollerManager.csproj", "."]
-RUN dotnet restore "./MicroServiceMicrocontrollerManager.csproj"
+RUN dotnet restore "MicroServiceMicrocontrollerManager.csproj"
 COPY . .
-WORKDIR "/src/."
-RUN dotnet build "./MicroServiceMicrocontrollerManager.csproj" -c $BUILD_CONFIGURATION -o /app/build
+ARG BUILD_CONFIGURATION=Release
+RUN dotnet build "MicroServiceMicrocontrollerManager.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
+# Публикация проекта
 FROM build AS publish
-RUN dotnet publish "./MicroServiceMicrocontrollerManager.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "MicroServiceMicrocontrollerManager.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
-FROM base AS final
+# Финальный слой с использованием пользователя app
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+RUN apt-get update && apt-get install -y curl
+
+# Проверка и создание пользователя app, если он отсутствует
+RUN if ! id -u app > /dev/null 2>&1; then useradd -m app; fi
+RUN mkdir -p /app && chown -R app:app /app
+
+USER app
 WORKDIR /app
 COPY --from=publish /app/publish .
 
-# Copy appsettings files
+# Копируем конфигурационные файлы
 COPY appsettings.json .
 COPY appsettings.Development.json .
 COPY appsettings.Docker.json .
 
+# Указываем команду для запуска
 ENTRYPOINT ["dotnet", "MicroServiceMicrocontrollerManager.dll"]
