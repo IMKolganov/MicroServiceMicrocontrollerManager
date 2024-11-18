@@ -4,7 +4,7 @@ namespace MicroServiceMicrocontrollerManager.Models.Other;
 
 public class GeneralRequest
 {
-    public string RequestId { get; set; }
+    public Guid RequestId { get; set; }
     public string RequestType { get; set; }
-    public JObject Data { get; set; }
+    public object Data { get; set; }
 }

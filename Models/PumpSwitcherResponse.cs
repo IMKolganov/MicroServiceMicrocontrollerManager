@@ -2,10 +2,10 @@
 
 namespace MicroServiceMicrocontrollerManager.Models;
 
-public class PumpSwitcherResponse(string requestId, int pumpId, bool success, string message)
+public class PumpSwitcherResponse(Guid requestId, int pumpId, bool success, string message)
     : IResponse
 {
-    public string RequestId { get; set; } = requestId;
+    public Guid RequestId { get; set; } = requestId;
     public int PumpId { get; set; } = pumpId;
     public bool Success { get; set; } = success;
     public string Message { get; set; } = message;

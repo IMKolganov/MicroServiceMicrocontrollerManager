@@ -52,7 +52,7 @@ public class MqttService
                 var requestIdProperty = typeof(TResponse).GetProperty("RequestId");
                 var responseRequestId = requestIdProperty?.GetValue(response)?.ToString();
 
-                if (responseRequestId == request.RequestId)
+                if (responseRequestId == request.RequestId.ToString())
                 {
                     responseReceived.TrySetResult(response);
                 }
@@ -83,7 +83,8 @@ public class MqttService
 
             if (result == null)
             {
-                Console.WriteLine("No response from MQTT within timeout.");
+                Console.WriteLine("MicrocontrollerManager: No response from MQTT within timeout.");
+                throw new Exception("MicrocontrollerManager: No response from MQTT within timeout.");
             }
 
             return result;

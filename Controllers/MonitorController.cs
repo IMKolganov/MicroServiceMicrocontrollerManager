@@ -14,11 +14,6 @@ namespace MicroServiceMicrocontrollerManager.Controllers
         [HttpPost("PumpSwitcherRequest")]
         public async Task<IActionResult> PumpSwitcher([FromBody] PumpSwitcherRequest request)
         {
-            if (request.RequestId == "string")
-            {
-                request.RequestId = Guid.NewGuid().ToString();
-            }
-
             var result =
                 await mqttService.SendRequestAndWaitForResponse<PumpSwitcherRequest, PumpSwitcherResponse>(
                     "control/pump/", "status/pump/", request);
@@ -31,15 +26,10 @@ namespace MicroServiceMicrocontrollerManager.Controllers
         }
         
         [HttpPost("GetTemperatureHumidity")]
-        public async Task<IActionResult> GetSoilMoisture([FromBody] GetTemperatureHumidityRequest request)
+        public async Task<IActionResult> GetTemperatureHumidity([FromBody] TemperatureHumidityRequest request)
         {
-            if (request.RequestId == "string")
-            {
-                request.RequestId = Guid.NewGuid().ToString();
-            }
-
             var result =
-                await mqttService.SendRequestAndWaitForResponse<GetTemperatureHumidityRequest, GetTemperatureHumidityResponse>(
+                await mqttService.SendRequestAndWaitForResponse<TemperatureHumidityRequest, TemperatureHumidityResponse>(
                     "control/dht/", "status/dht/", request);
             if (result == null)
             {
@@ -50,15 +40,10 @@ namespace MicroServiceMicrocontrollerManager.Controllers
         }
         
         [HttpPost("GetSoilMoistureRequest")]
-        public async Task<IActionResult> GetSoilMoisture([FromBody] GetSoilMoistureRequest request)
+        public async Task<IActionResult> GetSoilMoisture([FromBody] SoilMoistureRequest request)
         {
-            if (request.RequestId == "string")
-            {
-                request.RequestId = Guid.NewGuid().ToString();
-            }
-
             var result =
-                await mqttService.SendRequestAndWaitForResponse<GetSoilMoistureRequest, GetSoilMoistureResponse>(
+                await mqttService.SendRequestAndWaitForResponse<SoilMoistureRequest, SoilMoistureResponse>(
                     "control/soil-moisture/", "status/soil-moisture/", request);
             if (result == null)
             {

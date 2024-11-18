@@ -1,9 +1,8 @@
 ﻿namespace MicroServiceMicrocontrollerManager.Models.Other;
 
-public class GeneralResponse<T>
+public class GeneralResponse<T> : IRabbitMqResponse
 {
-    public string RequestId { get; set; }
-    public string ResponseType { get; set; }
+    public Guid RequestId { get; set; }
     public bool Success { get; set; }
     public string ErrorMessage { get; set; }
     public T Data { get; set; }

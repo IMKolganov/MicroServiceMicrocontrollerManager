@@ -2,5 +2,7 @@
 
 public interface IRequest
 {
-    string RequestId { get; set; }
+    Guid RequestId { get; set; }
+    bool UseRandomValuesFotTest { get; set; }
+    DateTime RequestDate { get; set; }
 }

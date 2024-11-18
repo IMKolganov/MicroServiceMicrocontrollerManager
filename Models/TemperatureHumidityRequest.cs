@@ -2,18 +2,18 @@
 
 namespace MicroServiceMicrocontrollerManager.Models;
 
-public class PumpSwitcherRequest : IRequest
+public class TemperatureHumidityRequest : IRequest
 {
-    public PumpSwitcherRequest()
+    public TemperatureHumidityRequest()
     {
     }
-    public PumpSwitcherRequest(Guid requestId)
+    public TemperatureHumidityRequest(Guid requestId)
     {
         RequestId = requestId;
     }
+    
     public Guid RequestId { get; set; }
     public bool UseRandomValuesFotTest { get; set; }
     public DateTime RequestDate { get; set; }
-    public int PumpId { get; set; }
-    public int Duration { get; set; }
+    public int SensorId { get; set; }
 }

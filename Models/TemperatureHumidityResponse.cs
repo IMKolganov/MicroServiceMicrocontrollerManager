@@ -2,8 +2,8 @@
 
 namespace MicroServiceMicrocontrollerManager.Models;
 
-public class GetTemperatureHumidityResponse(
-    string requestId,
+public class TemperatureHumidityResponse(
+    Guid requestId,
     bool success,
     string message,
     int sensorId,
@@ -11,7 +11,7 @@ public class GetTemperatureHumidityResponse(
     int humidity)
     : IResponse
 {
-    public string RequestId { get; set; } = requestId;
+    public Guid RequestId { get; set; } = requestId;
     public bool Success { get; set; } = success;
     public string Message { get; set; } = message;
     public DateTime CreateDate { get; set; } = DateTime.UtcNow;

@@ -19,12 +19,25 @@ public class ProcessingService(MqttService mqttService, RabbitMqService rabbitMq
         );
     }
 
-    private async Task<GetTemperatureHumidityResponse> ProcessTemperatureHumidityAsync(GetTemperatureHumidityRequest request)
+    private async Task<TemperatureHumidityResponse> ProcessTemperatureHumidityAsync(TemperatureHumidityRequest request)
     {
-        var response = await mqttService.SendRequestAndWaitForResponse<GetTemperatureHumidityRequest, GetTemperatureHumidityResponse>(
+        if (request.UseRandomValuesFotTest)
+        {
+            var random = new Random();
+            return new TemperatureHumidityResponse(
+                requestId: request.RequestId,
+                success: true,
+                message: "Generated random values",
+                sensorId: request.SensorId,
+                temperature: random.Next(-10, 35),
+                humidity: random.Next(0, 100)
+            );
+        }
+
+        var response = await mqttService.SendRequestAndWaitForResponse<TemperatureHumidityRequest, TemperatureHumidityResponse>(
             "control/dht/", "status/dht/", request);
 
-        return new GetTemperatureHumidityResponse(
+        return new TemperatureHumidityResponse(
             requestId: request.RequestId,
             success: response?.Success ?? false,
             message: response?.Message ?? string.Empty,
@@ -34,12 +47,12 @@ public class ProcessingService(MqttService mqttService, RabbitMqService rabbitMq
         );
     }
 
-    private async Task<GetSoilMoistureResponse> ProcessSoilMoistureAsync(GetSoilMoistureRequest request)
+    private async Task<SoilMoistureResponse> ProcessSoilMoistureAsync(SoilMoistureRequest request)
     {
-        var response = await mqttService.SendRequestAndWaitForResponse<GetSoilMoistureRequest, GetSoilMoistureResponse>(
+        var response = await mqttService.SendRequestAndWaitForResponse<SoilMoistureRequest, SoilMoistureResponse>(
             "control/soil-moisture/", "status/soil-moisture/", request);
 
-        return new GetSoilMoistureResponse(
+        return new SoilMoistureResponse(
             requestId: request.RequestId,
             success: response?.Success ?? false,
             sensorId: request.SensorId,
@@ -61,19 +74,17 @@ public class ProcessingService(MqttService mqttService, RabbitMqService rabbitMq
 
                 try
                 {
-                    // Проверка на null, чтобы избежать ошибки
-
                     specificResponse = request.RequestType switch
                     {
                         "PumpSwitcher" => await ProcessPumpSwitcherAsync(
                             JsonConvert.DeserializeObject<PumpSwitcherRequest>(request.Data.ToString())
                             ?? throw new InvalidOperationException("Failed to deserialize PumpSwitcherRequest")),
                         "TemperatureHumidity" => await ProcessTemperatureHumidityAsync(
-                            JsonConvert.DeserializeObject<GetTemperatureHumidityRequest>(request.Data.ToString())
+                            JsonConvert.DeserializeObject<TemperatureHumidityRequest>(request.Data.ToString())
                             ?? throw new InvalidOperationException(
                                 "Failed to deserialize GetTemperatureHumidityRequest")),
                         "SoilMoisture" => await ProcessSoilMoistureAsync(
-                            JsonConvert.DeserializeObject<GetSoilMoistureRequest>(request.Data.ToString())
+                            JsonConvert.DeserializeObject<SoilMoistureRequest>(request.Data.ToString())
                             ?? throw new InvalidOperationException("Failed to deserialize GetSoilMoistureRequest")),
                         _ => throw new NotImplementedException("Unknown request type")
                     };
@@ -88,10 +99,9 @@ public class ProcessingService(MqttService mqttService, RabbitMqService rabbitMq
                 return new GeneralResponse<object>
                 {
                     RequestId = request.RequestId,
-                    ResponseType = request.RequestType,
                     Success = success,
                     ErrorMessage = errorMessage ?? string.Empty,
-                    Data = specificResponse ?? throw new InvalidOperationException()
+                    Data = specificResponse ?? string.Empty,
                 };
             });
     }
