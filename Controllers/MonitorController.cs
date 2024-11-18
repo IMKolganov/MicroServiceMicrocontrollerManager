@@ -1,6 +1,8 @@
 using MicroServiceMicrocontrollerManager.Models;
 using MicroServiceMicrocontrollerManager.Services;
 using Microsoft.AspNetCore.Mvc;
+using SharedRequests.SmartGarden.Models.Requests;
+using SharedRequests.SmartGarden.Models.Responses;
 
 namespace MicroServiceMicrocontrollerManager.Controllers
 {

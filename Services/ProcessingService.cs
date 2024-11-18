@@ -13,12 +13,13 @@ public class ProcessingService(MqttService mqttService, RabbitMqService rabbitMq
         var response = await mqttService.SendRequestAndWaitForResponse<PumpSwitcherRequest, PumpSwitcherResponse>(
             "control/pump/", "status/pump/", request);
 
-        return new PumpSwitcherResponse(
-            requestId: request.RequestId,
-            pumpId: request.PumpId,
-            success: response?.Success ?? false,
-            message: response?.Message ?? string.Empty
-        );
+        return new PumpSwitcherResponse()
+        {
+            RequestId = request.RequestId,
+            PumpId = request.PumpId,
+            Success = response?.Success ?? false,
+            Message = response?.Message ?? String.Empty
+        };
     }
 
     private async Task<TemperatureHumidityResponse> ProcessTemperatureHumidityAsync(TemperatureHumidityRequest request)
@@ -51,6 +52,18 @@ public class ProcessingService(MqttService mqttService, RabbitMqService rabbitMq
 
     private async Task<SoilMoistureResponse> ProcessSoilMoistureAsync(SoilMoistureRequest request)
     {
+        if (request.UseRandomValuesFotTest)
+        {
+            var random = new Random();
+            return new SoilMoistureResponse(
+                requestId: request.RequestId,
+                success: true,
+                message: "Generated random values",
+                sensorId: request.SensorId,
+                soilMoistureLevelPercent: random.Next(0, 100)
+            );
+        }
+        
         var response = await mqttService.SendRequestAndWaitForResponse<SoilMoistureRequest, SoilMoistureResponse>(
             "control/soil-moisture/", "status/soil-moisture/", request);
 
